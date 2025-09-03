@@ -49,7 +49,7 @@ export const APIKeyManager: React.FC<APIKeyManagerProps> = ({ provider, apiKey, 
     try {
       const response = await fetch(`/api/tokens?provider=${encodeURIComponent(provider.name)}`);
       const data = await response.json();
-      
+
       if (data.apiKey) {
         setCurrentApiKey(data.apiKey);
         setApiKey(data.apiKey);
@@ -71,7 +71,7 @@ export const APIKeyManager: React.FC<APIKeyManagerProps> = ({ provider, apiKey, 
       setApiKey(savedKey);
       setTempKey(savedKey);
     }
-    
+
     setIsEditing(false);
   }, [provider.name, setApiKey]);
 
@@ -122,26 +122,26 @@ export const APIKeyManager: React.FC<APIKeyManagerProps> = ({ provider, apiKey, 
       if (response.ok) {
         const result = await response.json();
         console.log('API key saved to database:', result.message);
-        
+
         // Update parent state
         setApiKey(tempKey);
         setCurrentApiKey(tempKey);
-        
+
         // Also save to cookies as fallback
         const currentKeys = getApiKeysFromCookies();
         const newKeys = { ...currentKeys, [provider.name]: tempKey };
         Cookies.set('apiKeys', JSON.stringify(newKeys));
-        
+
         // Clear cache to refresh status
         delete providerKeyStatusCache[provider.name];
         checkApiKeyStatus();
-        
+
         setIsEditing(false);
       } else {
         const error = await response.json();
         console.error('Failed to save API key:', error.error);
         alert('Failed to save API key to database. Saving to cookies as fallback.');
-        
+
         // Fallback to cookies only
         const currentKeys = getApiKeysFromCookies();
         const newKeys = { ...currentKeys, [provider.name]: tempKey };
@@ -153,7 +153,7 @@ export const APIKeyManager: React.FC<APIKeyManagerProps> = ({ provider, apiKey, 
     } catch (error) {
       console.error('Network error saving API key:', error);
       alert('Network error. Saving to cookies as fallback.');
-      
+
       // Fallback to cookies only
       const currentKeys = getApiKeysFromCookies();
       const newKeys = { ...currentKeys, [provider.name]: tempKey };
@@ -203,11 +203,7 @@ export const APIKeyManager: React.FC<APIKeyManagerProps> = ({ provider, apiKey, 
       <div className="flex items-center gap-2 flex-1">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-bolt-elements-textSecondary">{provider?.name} API Key:</span>
-          {!isEditing && (
-            <div className="flex items-center gap-2">
-              {getStatusDisplay()}
-            </div>
-          )}
+          {!isEditing && <div className="flex items-center gap-2">{getStatusDisplay()}</div>}
         </div>
       </div>
 
@@ -216,7 +212,7 @@ export const APIKeyManager: React.FC<APIKeyManagerProps> = ({ provider, apiKey, 
           <div className="flex items-center gap-2">
             <div className="relative">
               <input
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 value={tempKey}
                 placeholder="Enter API Key"
                 onChange={(e) => setTempKey(e.target.value)}
@@ -226,7 +222,7 @@ export const APIKeyManager: React.FC<APIKeyManagerProps> = ({ provider, apiKey, 
               />
               <IconButton
                 onClick={() => setShowPassword(!showPassword)}
-                title={showPassword ? "Hide API Key" : "Show API Key"}
+                title={showPassword ? 'Hide API Key' : 'Show API Key'}
                 className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-transparent hover:bg-bolt-elements-background-depth-3"
               >
                 <div className={`${showPassword ? 'i-ph:eye-slash' : 'i-ph:eye'} w-4 h-4`} />
@@ -261,7 +257,7 @@ export const APIKeyManager: React.FC<APIKeyManagerProps> = ({ provider, apiKey, 
                 </span>
                 <IconButton
                   onClick={() => setShowPassword(!showPassword)}
-                  title={showPassword ? "Hide API Key" : "Show API Key"}
+                  title={showPassword ? 'Hide API Key' : 'Show API Key'}
                   className="bg-transparent hover:bg-bolt-elements-background-depth-4 p-1"
                 >
                   <div className={`${showPassword ? 'i-ph:eye-slash' : 'i-ph:eye'} w-3 h-3`} />

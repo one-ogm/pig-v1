@@ -13,7 +13,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
         return json({
           provider,
           hasToken: false,
-          apiKey: null
+          apiKey: null,
         });
       } else {
         return json({ apiKeys: {} });
@@ -26,7 +26,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       return json({
         provider,
         hasToken: !!apiKey,
-        apiKey: apiKey || null
+        apiKey: apiKey || null,
       });
     } else {
       // Get all tokens
@@ -40,7 +40,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
       return json({
         provider,
         hasToken: false,
-        apiKey: null
+        apiKey: null,
       });
     } else {
       return json({ apiKeys: {} });
@@ -74,7 +74,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
         return json({
           success: true,
           message: `${provider} API key saved successfully`,
-          token: savedToken
+          token: savedToken,
         });
       }
 
@@ -95,7 +95,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
         if (deleted) {
           return json({
             success: true,
-            message: `${provider} API key deleted successfully`
+            message: `${provider} API key deleted successfully`,
           });
         } else {
           return json({ error: 'Failed to delete API key' }, { status: 500 });

@@ -23,7 +23,7 @@ const apiTokenSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Create compound index for efficient queries

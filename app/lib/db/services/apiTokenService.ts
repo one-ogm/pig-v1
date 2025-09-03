@@ -17,7 +17,7 @@ export class ApiTokenService {
     provider: 'OpenRouter' | 'HuggingFace' | 'LMStudio',
     apiKey: string,
     userId: string = 'default_user',
-    context?: any
+    context?: any,
   ): Promise<IApiToken> {
     await this.ensureConnection(context);
 
@@ -51,7 +51,7 @@ export class ApiTokenService {
   static async getApiKey(
     provider: 'OpenRouter' | 'HuggingFace' | 'LMStudio',
     userId: string = 'default_user',
-    context?: any
+    context?: any,
   ): Promise<string | null> {
     await this.ensureConnection(context);
 
@@ -70,7 +70,7 @@ export class ApiTokenService {
     try {
       const tokens = await ApiToken.find({ userId, isActive: true });
       const apiKeys: Record<string, string> = {};
-      
+
       tokens.forEach((token) => {
         apiKeys[token.provider] = token.apiKey;
       });
@@ -85,16 +85,12 @@ export class ApiTokenService {
   static async deleteApiKey(
     provider: 'OpenRouter' | 'HuggingFace' | 'LMStudio',
     userId: string = 'default_user',
-    context?: any
+    context?: any,
   ): Promise<boolean> {
     await this.ensureConnection(context);
 
     try {
-      const result = await ApiToken.findOneAndUpdate(
-        { userId, provider },
-        { isActive: false },
-        { new: true }
-      );
+      const result = await ApiToken.findOneAndUpdate({ userId, provider }, { isActive: false }, { new: true });
       return !!result;
     } catch (error) {
       console.error('Error deleting API key:', error);
@@ -105,7 +101,7 @@ export class ApiTokenService {
   static async checkApiKeyExists(
     provider: 'OpenRouter' | 'HuggingFace' | 'LMStudio',
     userId: string = 'default_user',
-    context?: any
+    context?: any,
   ): Promise<boolean> {
     await this.ensureConnection(context);
 

@@ -48,7 +48,7 @@ export default defineConfig((config) => {
       chrome129IssuePlugin(),
       config.mode === 'production' && optimizeCssModules({ apply: 'build' }),
     ],
-    envPrefix: ["VITE_", "LMSTUDIO_API_BASE_URL"],
+    envPrefix: ['VITE_', 'LMSTUDIO_API_BASE_URL'],
     css: {
       preprocessorOptions: {
         scss: {

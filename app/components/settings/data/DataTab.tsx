@@ -8,11 +8,7 @@ import { classNames } from '~/utils/classNames';
 import type { Message } from 'ai';
 
 // List of supported providers that can have API keys
-const API_KEY_PROVIDERS = [
-  'HuggingFace',
-  'OpenRouter',
-  'LMStudio',
-] as const;
+const API_KEY_PROVIDERS = ['HuggingFace', 'OpenRouter', 'LMStudio'] as const;
 
 interface ApiKeys {
   [key: string]: string;
@@ -202,13 +198,11 @@ export default function DataTab() {
         }
 
         // Set base URLs if they exist
-        ['LMSTUDIO_API_BASE_URL'].forEach(
-          (baseUrl) => {
-            if (apiKeys[baseUrl]) {
-              Cookies.set(baseUrl, apiKeys[baseUrl]);
-            }
-          },
-        );
+        ['LMSTUDIO_API_BASE_URL'].forEach((baseUrl) => {
+          if (apiKeys[baseUrl]) {
+            Cookies.set(baseUrl, apiKeys[baseUrl]);
+          }
+        });
       } catch (error) {
         toast.error('Failed to import API keys. Make sure the file is a valid JSON file.');
         console.error('Failed to import API keys:', error);
