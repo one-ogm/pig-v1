@@ -16,9 +16,10 @@ export class ApiTokenService {
   static async saveApiKey(
     provider: 'OpenRouter' | 'HuggingFace' | 'LMStudio',
     apiKey: string,
-    userId: string = 'default_user'
+    userId: string = 'default_user',
+    context?: any
   ): Promise<IApiToken> {
-    await this.ensureConnection();
+    await this.ensureConnection(context);
 
     try {
       const existingToken = await ApiToken.findOne({ userId, provider });
