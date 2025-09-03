@@ -1,9 +1,16 @@
-import { connectToMongoDB } from '../mongodb';
+import { connectToMongoDB, isMongoDBAvailable } from '../mongodb';
 import { ApiToken, type IApiToken } from '../models/ApiToken';
 
 export class ApiTokenService {
-  static async ensureConnection() {
-    await connectToMongoDB();
+  static async ensureConnection(context?: any) {
+    if (!isMongoDBAvailable(context)) {
+      throw new Error('MongoDB is not available - please check environment variables');
+    }
+    await connectToMongoDB(context);
+  }
+
+  static isAvailable(context?: any): boolean {
+    return isMongoDBAvailable(context);
   }
 
   static async saveApiKey(
