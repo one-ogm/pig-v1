@@ -7,9 +7,9 @@ import type { ProviderInfo } from '~/types/model';
 export function OpenRouterTab() {
   const { providers, updateProviderSettings } = useSettings();
   const [apiKey, setApiKey] = useState('');
-  
+
   const openrouterProvider = providers['OpenRouter'];
-  
+
   // Create a ProviderInfo object for APIKeyManager
   const providerInfo: ProviderInfo = {
     name: 'OpenRouter',
@@ -17,7 +17,7 @@ export function OpenRouterTab() {
     labelForGetApiKey: 'Get OpenRouter Key',
     icon: 'i-ph:key',
     staticModels: [],
-    getDynamicModels: () => Promise.resolve([])
+    getDynamicModels: () => Promise.resolve([]),
   };
 
   if (!openrouterProvider) {
@@ -81,18 +81,20 @@ export function OpenRouterTab() {
               <div className="flex items-center gap-3">
                 <div className="text-right">
                   <p className="text-sm text-bolt-elements-textSecondary">Provider Status</p>
-                  <p className={`text-sm font-medium ${
-                    openrouterProvider.settings.enabled ? 'text-green-400' : 'text-bolt-elements-textTertiary'
-                  }`}>
+                  <p
+                    className={`text-sm font-medium ${
+                      openrouterProvider.settings.enabled ? 'text-green-400' : 'text-bolt-elements-textTertiary'
+                    }`}
+                  >
                     {openrouterProvider.settings.enabled ? 'Enabled' : 'Disabled'}
                   </p>
                 </div>
                 <Switch
                   checked={openrouterProvider.settings.enabled}
                   onCheckedChange={(enabled) => {
-                    updateProviderSettings('OpenRouter', { 
-                      ...openrouterProvider.settings, 
-                      enabled 
+                    updateProviderSettings('OpenRouter', {
+                      ...openrouterProvider.settings,
+                      enabled,
                     });
                   }}
                 />
@@ -152,11 +154,7 @@ export function OpenRouterTab() {
             </div>
           </div>
           <div className="p-6">
-            <APIKeyManager
-              provider={providerInfo}
-              apiKey={apiKey}
-              setApiKey={setApiKey}
-            />
+            <APIKeyManager provider={providerInfo} apiKey={apiKey} setApiKey={setApiKey} />
           </div>
         </div>
       )}
@@ -172,26 +170,43 @@ export function OpenRouterTab() {
               <h4 className="font-semibold text-blue-200 mb-3">Getting Started with OpenRouter</h4>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-xs font-medium text-blue-400">1</div>
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-xs font-medium text-blue-400">
+                    1
+                  </div>
                   <div>
                     <p className="text-sm text-blue-300 font-medium">Create Account & Get API Key</p>
                     <p className="text-xs text-blue-400 mt-1">
-                      Visit <a href="https://openrouter.ai/settings/keys" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300">OpenRouter Settings</a> to create your API key
+                      Visit{' '}
+                      <a
+                        href="https://openrouter.ai/settings/keys"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline hover:text-blue-300"
+                      >
+                        OpenRouter Settings
+                      </a>{' '}
+                      to create your API key
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-xs font-medium text-blue-400">2</div>
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-xs font-medium text-blue-400">
+                    2
+                  </div>
                   <div>
                     <p className="text-sm text-blue-300 font-medium">Add Credits</p>
                     <p className="text-xs text-blue-400 mt-1">Add credits to your account to start using models</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-xs font-medium text-blue-400">3</div>
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-xs font-medium text-blue-400">
+                    3
+                  </div>
                   <div>
                     <p className="text-sm text-blue-300 font-medium">Start Building</p>
-                    <p className="text-xs text-blue-400 mt-1">Try different models to find the best fit for your use case</p>
+                    <p className="text-xs text-blue-400 mt-1">
+                      Try different models to find the best fit for your use case
+                    </p>
                   </div>
                 </div>
               </div>

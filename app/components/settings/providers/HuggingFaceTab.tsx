@@ -7,9 +7,9 @@ import type { ProviderInfo } from '~/types/model';
 export function HuggingFaceTab() {
   const { providers, updateProviderSettings } = useSettings();
   const [apiKey, setApiKey] = useState('');
-  
+
   const huggingfaceProvider = providers['HuggingFace'];
-  
+
   // Create a ProviderInfo object for APIKeyManager
   const providerInfo: ProviderInfo = {
     name: 'HuggingFace',
@@ -17,7 +17,7 @@ export function HuggingFaceTab() {
     labelForGetApiKey: 'Get HuggingFace Token',
     icon: 'i-ph:key',
     staticModels: [],
-    getDynamicModels: () => Promise.resolve([])
+    getDynamicModels: () => Promise.resolve([]),
   };
 
   if (!huggingfaceProvider) {
@@ -81,18 +81,20 @@ export function HuggingFaceTab() {
               <div className="flex items-center gap-3">
                 <div className="text-right">
                   <p className="text-sm text-bolt-elements-textSecondary">Provider Status</p>
-                  <p className={`text-sm font-medium ${
-                    huggingfaceProvider.settings.enabled ? 'text-green-400' : 'text-bolt-elements-textTertiary'
-                  }`}>
+                  <p
+                    className={`text-sm font-medium ${
+                      huggingfaceProvider.settings.enabled ? 'text-green-400' : 'text-bolt-elements-textTertiary'
+                    }`}
+                  >
                     {huggingfaceProvider.settings.enabled ? 'Enabled' : 'Disabled'}
                   </p>
                 </div>
                 <Switch
                   checked={huggingfaceProvider.settings.enabled}
                   onCheckedChange={(enabled) => {
-                    updateProviderSettings('HuggingFace', { 
-                      ...huggingfaceProvider.settings, 
-                      enabled 
+                    updateProviderSettings('HuggingFace', {
+                      ...huggingfaceProvider.settings,
+                      enabled,
                     });
                   }}
                 />
@@ -153,12 +155,23 @@ export function HuggingFaceTab() {
         <div className="p-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
-              { name: "Qwen/Qwen2.5-Coder-32B-Instruct", description: "Advanced coding assistant", icon: "i-ph:code" },
-              { name: "meta-llama/Llama-3.1-70B-Instruct", description: "General purpose large model", icon: "i-ph:chat-circle" },
-              { name: "codellama/CodeLlama-34b-Instruct-hf", description: "Meta's code generation model", icon: "i-ph:brackets-curly" },
-              { name: "01-ai/Yi-1.5-34B-Chat", description: "Bilingual conversational AI", icon: "i-ph:globe" }
+              { name: 'Qwen/Qwen2.5-Coder-32B-Instruct', description: 'Advanced coding assistant', icon: 'i-ph:code' },
+              {
+                name: 'meta-llama/Llama-3.1-70B-Instruct',
+                description: 'General purpose large model',
+                icon: 'i-ph:chat-circle',
+              },
+              {
+                name: 'codellama/CodeLlama-34b-Instruct-hf',
+                description: "Meta's code generation model",
+                icon: 'i-ph:brackets-curly',
+              },
+              { name: '01-ai/Yi-1.5-34B-Chat', description: 'Bilingual conversational AI', icon: 'i-ph:globe' },
             ].map((model, index) => (
-              <div key={index} className="p-4 rounded-lg bg-bolt-elements-bg-depth-1 border border-bolt-elements-borderColor hover:border-bolt-elements-focus/30 transition-colors">
+              <div
+                key={index}
+                className="p-4 rounded-lg bg-bolt-elements-bg-depth-1 border border-bolt-elements-borderColor hover:border-bolt-elements-focus/30 transition-colors"
+              >
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-bolt-elements-focus/20 flex items-center justify-center">
                     <div className={`${model.icon} w-4 h-4 text-bolt-elements-focus`} />
@@ -191,11 +204,7 @@ export function HuggingFaceTab() {
             </div>
           </div>
           <div className="p-6">
-            <APIKeyManager
-              provider={providerInfo}
-              apiKey={apiKey}
-              setApiKey={setApiKey}
-            />
+            <APIKeyManager provider={providerInfo} apiKey={apiKey} setApiKey={setApiKey} />
           </div>
         </div>
       )}
@@ -211,28 +220,54 @@ export function HuggingFaceTab() {
               <h4 className="font-semibold text-orange-200 mb-3">Getting Started with HuggingFace</h4>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500/20 flex items-center justify-center text-xs font-medium text-orange-400">1</div>
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500/20 flex items-center justify-center text-xs font-medium text-orange-400">
+                    1
+                  </div>
                   <div>
                     <p className="text-sm text-orange-300 font-medium">Create Free Account</p>
                     <p className="text-xs text-orange-400 mt-1">
-                      Sign up at <a href="https://huggingface.co" target="_blank" rel="noopener noreferrer" className="underline hover:text-orange-300">HuggingFace.co</a> for free access
+                      Sign up at{' '}
+                      <a
+                        href="https://huggingface.co"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline hover:text-orange-300"
+                      >
+                        HuggingFace.co
+                      </a>{' '}
+                      for free access
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500/20 flex items-center justify-center text-xs font-medium text-orange-400">2</div>
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500/20 flex items-center justify-center text-xs font-medium text-orange-400">
+                    2
+                  </div>
                   <div>
                     <p className="text-sm text-orange-300 font-medium">Generate API Token</p>
                     <p className="text-xs text-orange-400 mt-1">
-                      Visit <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener noreferrer" className="underline hover:text-orange-300">Token Settings</a> and create a "Read" access token
+                      Visit{' '}
+                      <a
+                        href="https://huggingface.co/settings/tokens"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline hover:text-orange-300"
+                      >
+                        Token Settings
+                      </a>{' '}
+                      and create a "Read" access token
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500/20 flex items-center justify-center text-xs font-medium text-orange-400">3</div>
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500/20 flex items-center justify-center text-xs font-medium text-orange-400">
+                    3
+                  </div>
                   <div>
                     <p className="text-sm text-orange-300 font-medium">Start Exploring</p>
-                    <p className="text-xs text-orange-400 mt-1">Browse thousands of models and find the perfect one for your project</p>
+                    <p className="text-xs text-orange-400 mt-1">
+                      Browse thousands of models and find the perfect one for your project
+                    </p>
                   </div>
                 </div>
               </div>

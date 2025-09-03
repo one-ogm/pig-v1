@@ -10,23 +10,23 @@ export function LMStudioTab() {
   const [isTestingConnection, setIsTestingConnection] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [modelCount, setModelCount] = useState<number>(0);
-  
+
   const lmstudioProvider = providers['LMStudio'];
-  
+
   // Get environment base URL if set
   const envBaseUrlKey = providerBaseUrlEnvKeys['LMStudio']?.baseUrlKey;
   const envBaseUrl = envBaseUrlKey ? import.meta.env[envBaseUrlKey] : undefined;
 
   const testConnection = async () => {
     if (!lmstudioProvider?.settings.enabled) return;
-    
+
     setIsTestingConnection(true);
     setConnectionStatus('idle');
-    
+
     try {
       const baseUrl = lmstudioProvider.settings.baseUrl || envBaseUrl || 'http://localhost:1234';
       const response = await fetch(`${baseUrl}/v1/models`);
-      
+
       if (response.ok) {
         const data = await response.json();
         setConnectionStatus('success');
@@ -34,7 +34,7 @@ export function LMStudioTab() {
         logStore.logProvider(`LMStudio connection successful. Found ${data.data?.length || 0} models`, {
           provider: 'LMStudio',
           baseUrl,
-          modelCount: data.data?.length || 0
+          modelCount: data.data?.length || 0,
         });
       } else {
         setConnectionStatus('error');
@@ -42,7 +42,7 @@ export function LMStudioTab() {
         logStore.logProvider(`LMStudio connection failed: ${response.status}`, {
           provider: 'LMStudio',
           baseUrl,
-          status: response.status
+          status: response.status,
         });
       }
     } catch (error) {
@@ -50,7 +50,7 @@ export function LMStudioTab() {
       setModelCount(0);
       logStore.logProvider(`LMStudio connection error: ${error}`, {
         provider: 'LMStudio',
-        error: String(error)
+        error: String(error),
       });
     } finally {
       setIsTestingConnection(false);
@@ -148,18 +148,20 @@ export function LMStudioTab() {
               <div className="flex items-center gap-3">
                 <div className="text-right">
                   <p className="text-sm text-bolt-elements-textSecondary">Provider Status</p>
-                  <p className={`text-sm font-medium ${
-                    lmstudioProvider.settings.enabled ? 'text-green-400' : 'text-bolt-elements-textTertiary'
-                  }`}>
+                  <p
+                    className={`text-sm font-medium ${
+                      lmstudioProvider.settings.enabled ? 'text-green-400' : 'text-bolt-elements-textTertiary'
+                    }`}
+                  >
                     {lmstudioProvider.settings.enabled ? 'Enabled' : 'Disabled'}
                   </p>
                 </div>
                 <Switch
                   checked={lmstudioProvider.settings.enabled}
                   onCheckedChange={(enabled) => {
-                    updateProviderSettings('LMStudio', { 
-                      ...lmstudioProvider.settings, 
-                      enabled 
+                    updateProviderSettings('LMStudio', {
+                      ...lmstudioProvider.settings,
+                      enabled,
                     });
                   }}
                 />
@@ -221,7 +223,7 @@ export function LMStudioTab() {
               {getConnectionStatusDisplay()}
             </div>
           </div>
-          
+
           <div className="p-6 space-y-6">
             {envBaseUrl && (
               <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
@@ -248,9 +250,9 @@ export function LMStudioTab() {
                     if (newBaseUrl && newBaseUrl.trim().length === 0) {
                       newBaseUrl = undefined;
                     }
-                    updateProviderSettings('LMStudio', { 
-                      ...lmstudioProvider.settings, 
-                      baseUrl: newBaseUrl 
+                    updateProviderSettings('LMStudio', {
+                      ...lmstudioProvider.settings,
+                      baseUrl: newBaseUrl,
                     });
                     setConnectionStatus('idle');
                     setModelCount(0);
@@ -291,33 +293,56 @@ export function LMStudioTab() {
               <h4 className="font-semibold text-purple-200 mb-4">Setup LMStudio in 4 Easy Steps</h4>
               <div className="space-y-4">
                 <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-sm font-bold text-purple-400">1</div>
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-sm font-bold text-purple-400">
+                    1
+                  </div>
                   <div>
                     <p className="text-sm text-purple-300 font-medium mb-1">Download & Install LMStudio</p>
                     <p className="text-xs text-purple-400">
-                      Get LMStudio from <a href="https://lmstudio.ai/" target="_blank" rel="noopener noreferrer" className="underline hover:text-purple-300">lmstudio.ai</a> and install on your system
+                      Get LMStudio from{' '}
+                      <a
+                        href="https://lmstudio.ai/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline hover:text-purple-300"
+                      >
+                        lmstudio.ai
+                      </a>{' '}
+                      and install on your system
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-sm font-bold text-purple-400">2</div>
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-sm font-bold text-purple-400">
+                    2
+                  </div>
                   <div>
                     <p className="text-sm text-purple-300 font-medium mb-1">Download a Model</p>
-                    <p className="text-xs text-purple-400">Browse and download models like Llama, Mistral, CodeLlama, or Qwen from the built-in model browser</p>
+                    <p className="text-xs text-purple-400">
+                      Browse and download models like Llama, Mistral, CodeLlama, or Qwen from the built-in model browser
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-sm font-bold text-purple-400">3</div>
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-sm font-bold text-purple-400">
+                    3
+                  </div>
                   <div>
                     <p className="text-sm text-purple-300 font-medium mb-1">Start the Local Server</p>
-                    <p className="text-xs text-purple-400">Launch the local server in LMStudio (usually accessible at localhost:1234)</p>
+                    <p className="text-xs text-purple-400">
+                      Launch the local server in LMStudio (usually accessible at localhost:1234)
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-sm font-bold text-purple-400">4</div>
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-sm font-bold text-purple-400">
+                    4
+                  </div>
                   <div>
                     <p className="text-sm text-purple-300 font-medium mb-1">Test Connection</p>
-                    <p className="text-xs text-purple-400">Use the "Test Connection" button above to verify everything is working properly</p>
+                    <p className="text-xs text-purple-400">
+                      Use the "Test Connection" button above to verify everything is working properly
+                    </p>
                   </div>
                 </div>
               </div>
@@ -335,21 +360,38 @@ export function LMStudioTab() {
             </div>
             <div>
               <h4 className="font-semibold text-bolt-elements-textPrimary">Troubleshooting</h4>
-              <p className="text-sm text-bolt-elements-textSecondary">
-                Common issues and solutions
-              </p>
+              <p className="text-sm text-bolt-elements-textSecondary">Common issues and solutions</p>
             </div>
           </div>
         </div>
         <div className="p-6">
           <div className="space-y-4">
             {[
-              { icon: "i-ph:desktop", issue: "Connection Refused", solution: "Make sure LMStudio server is running and accessible" },
-              { icon: "i-ph:number-square-one", issue: "Wrong Port", solution: "Check that the port number matches your LMStudio configuration (default: 1234)" },
-              { icon: "i-ph:globe", issue: "Docker Issues", solution: "If using Docker, try replacing localhost with host.docker.internal" },
-              { icon: "i-ph:shield", issue: "Firewall", solution: "Ensure firewall allows connections to the specified port" }
+              {
+                icon: 'i-ph:desktop',
+                issue: 'Connection Refused',
+                solution: 'Make sure LMStudio server is running and accessible',
+              },
+              {
+                icon: 'i-ph:number-square-one',
+                issue: 'Wrong Port',
+                solution: 'Check that the port number matches your LMStudio configuration (default: 1234)',
+              },
+              {
+                icon: 'i-ph:globe',
+                issue: 'Docker Issues',
+                solution: 'If using Docker, try replacing localhost with host.docker.internal',
+              },
+              {
+                icon: 'i-ph:shield',
+                issue: 'Firewall',
+                solution: 'Ensure firewall allows connections to the specified port',
+              },
             ].map((item, index) => (
-              <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-bolt-elements-bg-depth-1 border border-bolt-elements-borderColor">
+              <div
+                key={index}
+                className="flex items-start gap-3 p-3 rounded-lg bg-bolt-elements-bg-depth-1 border border-bolt-elements-borderColor"
+              >
                 <div className="flex-shrink-0 w-6 h-6 rounded-lg bg-bolt-elements-focus/20 flex items-center justify-center">
                   <div className={`${item.icon} w-4 h-4 text-bolt-elements-focus`} />
                 </div>
