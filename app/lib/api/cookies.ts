@@ -1,3 +1,5 @@
+import { ApiTokenService } from '~/lib/db/services/apiTokenService';
+
 export function parseCookies(cookieHeader: string | null) {
   const cookies: Record<string, string> = {};
 
@@ -30,4 +32,22 @@ export function getApiKeysFromCookie(cookieHeader: string | null): Record<string
 export function getProviderSettingsFromCookie(cookieHeader: string | null): Record<string, any> {
   const cookies = parseCookies(cookieHeader);
   return cookies.providers ? JSON.parse(cookies.providers) : {};
+}
+
+// New function to get API keys from both MongoDB and cookies
+export async function getAllApiKeys(cookieHeader: string | null): Promise<Record<string, string>> {
+  try {
+    // Get API keys from MongoDB
+    const mongoKeys = await ApiTokenService.getAllApiKeys();
+
+    // Get API keys from cookies as fallback
+    const cookieKeys = getApiKeysFromCookie(cookieHeader);
+
+    // MongoDB keys take precedence over cookie keys
+    return { ...cookieKeys, ...mongoKeys };
+  } catch (error) {
+    console.error('Error getting API keys from MongoDB, falling back to cookies:', error);
+    // Fallback to cookies only if MongoDB fails
+    return getApiKeysFromCookie(cookieHeader);
+  }
 }
