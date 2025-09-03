@@ -50,9 +50,10 @@ export class ApiTokenService {
 
   static async getApiKey(
     provider: 'OpenRouter' | 'HuggingFace' | 'LMStudio',
-    userId: string = 'default_user'
+    userId: string = 'default_user',
+    context?: any
   ): Promise<string | null> {
-    await this.ensureConnection();
+    await this.ensureConnection(context);
 
     try {
       const token = await ApiToken.findOne({ userId, provider, isActive: true });
@@ -63,8 +64,8 @@ export class ApiTokenService {
     }
   }
 
-  static async getAllApiKeys(userId: string = 'default_user'): Promise<Record<string, string>> {
-    await this.ensureConnection();
+  static async getAllApiKeys(userId: string = 'default_user', context?: any): Promise<Record<string, string>> {
+    await this.ensureConnection(context);
 
     try {
       const tokens = await ApiToken.find({ userId, isActive: true });
@@ -83,9 +84,10 @@ export class ApiTokenService {
 
   static async deleteApiKey(
     provider: 'OpenRouter' | 'HuggingFace' | 'LMStudio',
-    userId: string = 'default_user'
+    userId: string = 'default_user',
+    context?: any
   ): Promise<boolean> {
-    await this.ensureConnection();
+    await this.ensureConnection(context);
 
     try {
       const result = await ApiToken.findOneAndUpdate(
@@ -102,9 +104,10 @@ export class ApiTokenService {
 
   static async checkApiKeyExists(
     provider: 'OpenRouter' | 'HuggingFace' | 'LMStudio',
-    userId: string = 'default_user'
+    userId: string = 'default_user',
+    context?: any
   ): Promise<boolean> {
-    await this.ensureConnection();
+    await this.ensureConnection(context);
 
     try {
       const token = await ApiToken.findOne({ userId, provider, isActive: true });
