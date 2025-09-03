@@ -48,7 +48,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   }
 }
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request, context }: ActionFunctionArgs) {
   const method = request.method;
 
   try {
@@ -56,7 +56,7 @@ export async function action({ request }: ActionFunctionArgs) {
       case 'POST': {
         // Save/Update token
         const { provider, apiKey } = await request.json();
-        
+
         if (!provider || !apiKey) {
           return json({ error: 'Provider and apiKey are required' }, { status: 400 });
         }
@@ -65,27 +65,37 @@ export async function action({ request }: ActionFunctionArgs) {
           return json({ error: 'Invalid provider' }, { status: 400 });
         }
 
-        const savedToken = await ApiTokenService.saveApiKey(provider, apiKey);
-        return json({ 
-          success: true, 
+        // Check if MongoDB is available
+        if (!ApiTokenService.isAvailable(context)) {
+          return json({ error: 'Database not available. Please use cookies fallback.' }, { status: 503 });
+        }
+
+        const savedToken = await ApiTokenService.saveApiKey(provider, apiKey, 'default_user', context);
+        return json({
+          success: true,
           message: `${provider} API key saved successfully`,
-          token: savedToken 
+          token: savedToken
         });
       }
 
       case 'DELETE': {
         // Delete token
         const { provider } = await request.json();
-        
+
         if (!provider) {
           return json({ error: 'Provider is required' }, { status: 400 });
         }
 
-        const deleted = await ApiTokenService.deleteApiKey(provider);
+        // Check if MongoDB is available
+        if (!ApiTokenService.isAvailable(context)) {
+          return json({ error: 'Database not available. Please use cookies fallback.' }, { status: 503 });
+        }
+
+        const deleted = await ApiTokenService.deleteApiKey(provider, 'default_user', context);
         if (deleted) {
-          return json({ 
-            success: true, 
-            message: `${provider} API key deleted successfully` 
+          return json({
+            success: true,
+            message: `${provider} API key deleted successfully`
           });
         } else {
           return json({ error: 'Failed to delete API key' }, { status: 500 });
@@ -97,6 +107,6 @@ export async function action({ request }: ActionFunctionArgs) {
     }
   } catch (error) {
     console.error('Error in tokens action:', error);
-    return json({ error: 'Server error' }, { status: 500 });
+    return json({ error: 'Database error. Please use cookies fallback.' }, { status: 500 });
   }
 }
