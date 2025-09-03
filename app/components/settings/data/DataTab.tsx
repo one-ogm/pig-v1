@@ -152,10 +152,7 @@ export default function DataTab() {
       template[`${provider}_API_KEY`] = '';
     });
 
-    template.OPENAI_LIKE_API_BASE_URL = '';
     template.LMSTUDIO_API_BASE_URL = '';
-    template.OLLAMA_API_BASE_URL = '';
-    template.TOGETHER_API_BASE_URL = '';
 
     downloadAsJson(template, 'api-keys-template.json');
     toast.success('API keys template exported successfully');
