@@ -48,7 +48,7 @@ async function llmCallAction({ context, request }: ActionFunctionArgs) {
   }
 
   const cookieHeader = request.headers.get('Cookie');
-  const apiKeys = await getAllApiKeys(cookieHeader);
+  const apiKeys = await getAllApiKeys(cookieHeader, context);
   const providerSettings = getProviderSettingsFromCookie(cookieHeader);
 
   if (streamOutput) {
