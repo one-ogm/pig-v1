@@ -11,10 +11,16 @@ export const loader: LoaderFunction = async ({ context, request }) => {
   }
 
   try {
-    // Check MongoDB first
-    const hasMongoToken = await ApiTokenService.checkApiKeyExists(provider as any);
-    if (hasMongoToken) {
-      return Response.json({ isSet: true, source: 'database' });
+    // Check MongoDB first (only if available)
+    if (ApiTokenService.isAvailable(context)) {
+      try {
+        const hasMongoToken = await ApiTokenService.checkApiKeyExists(provider as any, 'default_user', context);
+        if (hasMongoToken) {
+          return Response.json({ isSet: true, source: 'database' });
+        }
+      } catch (mongoError) {
+        console.log('MongoDB check failed, falling back to environment variables:', mongoError);
+      }
     }
 
     // Check environment variables
