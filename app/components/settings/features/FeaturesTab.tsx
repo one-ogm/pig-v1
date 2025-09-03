@@ -79,7 +79,7 @@ export default function FeaturesTab() {
             <Switch className="ml-auto" checked={isLocalModel} onCheckedChange={enableLocalModels} />
           </div>
           <p className="text-xs text-bolt-elements-textTertiary mb-4">
-            Enable experimental providers such as Ollama, LMStudio, and OpenAILike.
+            Enable experimental providers such as LMStudio.
           </p>
         </div>
         <div className="flex items-start justify-between pt-4 mb-2 gap-2">
