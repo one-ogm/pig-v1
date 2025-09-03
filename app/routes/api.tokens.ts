@@ -1,27 +1,50 @@
 import { type ActionFunctionArgs, type LoaderFunctionArgs, json } from '@remix-run/cloudflare';
 import { ApiTokenService } from '~/lib/db/services/apiTokenService';
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
+export async function loader({ request, context }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const provider = url.searchParams.get('provider');
 
   try {
+    // Check if MongoDB is available
+    if (!ApiTokenService.isAvailable(context)) {
+      console.log('MongoDB not available, returning empty response');
+      if (provider) {
+        return json({
+          provider,
+          hasToken: false,
+          apiKey: null
+        });
+      } else {
+        return json({ apiKeys: {} });
+      }
+    }
+
     if (provider) {
       // Get specific provider token
-      const apiKey = await ApiTokenService.getApiKey(provider as any);
-      return json({ 
-        provider, 
+      const apiKey = await ApiTokenService.getApiKey(provider as any, 'default_user', context);
+      return json({
+        provider,
         hasToken: !!apiKey,
-        apiKey: apiKey || null 
+        apiKey: apiKey || null
       });
     } else {
       // Get all tokens
-      const allApiKeys = await ApiTokenService.getAllApiKeys();
+      const allApiKeys = await ApiTokenService.getAllApiKeys('default_user', context);
       return json({ apiKeys: allApiKeys });
     }
   } catch (error) {
     console.error('Error in tokens loader:', error);
-    return json({ error: 'Failed to fetch tokens' }, { status: 500 });
+    // Return empty response instead of error to prevent app crash
+    if (provider) {
+      return json({
+        provider,
+        hasToken: false,
+        apiKey: null
+      });
+    } else {
+      return json({ apiKeys: {} });
+    }
   }
 }
 
