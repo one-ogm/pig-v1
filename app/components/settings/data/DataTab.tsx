@@ -202,7 +202,7 @@ export default function DataTab() {
         }
 
         // Set base URLs if they exist
-        ['OPENAI_LIKE_API_BASE_URL', 'LMSTUDIO_API_BASE_URL', 'OLLAMA_API_BASE_URL', 'TOGETHER_API_BASE_URL'].forEach(
+        ['LMSTUDIO_API_BASE_URL'].forEach(
           (baseUrl) => {
             if (apiKeys[baseUrl]) {
               Cookies.set(baseUrl, apiKeys[baseUrl]);
