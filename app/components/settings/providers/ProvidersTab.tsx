@@ -1,147 +1,143 @@
-import React, { useEffect, useState } from 'react';
-import { Switch } from '~/components/ui/Switch';
-import { useSettings } from '~/lib/hooks/useSettings';
-import { LOCAL_PROVIDERS, URL_CONFIGURABLE_PROVIDERS } from '~/lib/stores/settings';
-import type { IProviderConfig } from '~/types/model';
-import { logStore } from '~/lib/stores/logs';
+import React, { useState } from 'react';
+import { HuggingFaceTab } from './HuggingFaceTab';
+import { OpenRouterTab } from './OpenRouterTab';
+import { LMStudioTab } from './LMStudioTab';
 
-// Import a default fallback icon
-import { providerBaseUrlEnvKeys } from '~/utils/constants';
+type TabId = 'huggingface' | 'openrouter' | 'lmstudio';
 
-const DefaultIcon = '/icons/Default.svg'; // Adjust the path as necessary
+interface Tab {
+  id: TabId;
+  label: string;
+  icon: string;
+  description: string;
+  badge?: string;
+}
+
+const tabs: Tab[] = [
+  {
+    id: 'huggingface',
+    label: 'HuggingFace',
+    icon: '/icons/HuggingFace.svg',
+    description: 'Open-source models',
+    badge: 'Free',
+  },
+  {
+    id: 'openrouter',
+    label: 'OpenRouter',
+    icon: '/icons/OpenRouter.svg',
+    description: 'Unified API access',
+    badge: 'Popular',
+  },
+  {
+    id: 'lmstudio',
+    label: 'LMStudio',
+    icon: '/icons/LMStudio.svg',
+    description: 'Local models',
+    badge: 'Private',
+  },
+];
 
 export default function ProvidersTab() {
-  const { providers, updateProviderSettings, isLocalModel } = useSettings();
-  const [filteredProviders, setFilteredProviders] = useState<IProviderConfig[]>([]);
+  const [activeTab, setActiveTab] = useState<TabId>('openrouter');
 
-  // Load base URLs from cookies
-  const [searchTerm, setSearchTerm] = useState('');
-
-  useEffect(() => {
-    let newFilteredProviders: IProviderConfig[] = Object.entries(providers).map(([key, value]) => ({
-      ...value,
-      name: key,
-    }));
-
-    if (searchTerm && searchTerm.length > 0) {
-      newFilteredProviders = newFilteredProviders.filter((provider) =>
-        provider.name.toLowerCase().includes(searchTerm.toLowerCase()),
-      );
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'huggingface':
+        return <HuggingFaceTab />;
+      case 'openrouter':
+        return <OpenRouterTab />;
+      case 'lmstudio':
+        return <LMStudioTab />;
+      default:
+        return <OpenRouterTab />;
     }
-
-    if (!isLocalModel) {
-      newFilteredProviders = newFilteredProviders.filter((provider) => !LOCAL_PROVIDERS.includes(provider.name));
-    }
-
-    newFilteredProviders.sort((a, b) => a.name.localeCompare(b.name));
-
-    // Split providers into regular and URL-configurable
-    const regular = newFilteredProviders.filter((p) => !URL_CONFIGURABLE_PROVIDERS.includes(p.name));
-    const urlConfigurable = newFilteredProviders.filter((p) => URL_CONFIGURABLE_PROVIDERS.includes(p.name));
-
-    setFilteredProviders([...regular, ...urlConfigurable]);
-  }, [providers, searchTerm, isLocalModel]);
-
-  const renderProviderCard = (provider: IProviderConfig) => {
-    const envBaseUrlKey = providerBaseUrlEnvKeys[provider.name].baseUrlKey;
-    const envBaseUrl = envBaseUrlKey ? import.meta.env[envBaseUrlKey] : undefined;
-    const isUrlConfigurable = URL_CONFIGURABLE_PROVIDERS.includes(provider.name);
-
-    return (
-      <div
-        key={provider.name}
-        className="flex flex-col provider-item hover:bg-bolt-elements-bg-depth-3 p-4 rounded-lg border border-bolt-elements-borderColor"
-      >
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <img
-              src={`/icons/${provider.name}.svg`}
-              onError={(e) => {
-                e.currentTarget.src = DefaultIcon;
-              }}
-              alt={`${provider.name} icon`}
-              className="w-6 h-6 dark:invert"
-            />
-            <span className="text-bolt-elements-textPrimary">{provider.name}</span>
-          </div>
-          <Switch
-            className="ml-auto"
-            checked={provider.settings.enabled}
-            onCheckedChange={(enabled) => {
-              updateProviderSettings(provider.name, { ...provider.settings, enabled });
-
-              if (enabled) {
-                logStore.logProvider(`Provider ${provider.name} enabled`, { provider: provider.name });
-              } else {
-                logStore.logProvider(`Provider ${provider.name} disabled`, { provider: provider.name });
-              }
-            }}
-          />
-        </div>
-        {isUrlConfigurable && provider.settings.enabled && (
-          <div className="mt-2">
-            {envBaseUrl && (
-              <label className="block text-xs text-bolt-elements-textSecondary text-green-300 mb-2">
-                Set On (.env) : {envBaseUrl}
-              </label>
-            )}
-            <label className="block text-sm text-bolt-elements-textSecondary mb-2">
-              {envBaseUrl ? 'Override Base Url' : 'Base URL '}:{' '}
-            </label>
-            <input
-              type="text"
-              value={provider.settings.baseUrl || ''}
-              onChange={(e) => {
-                let newBaseUrl: string | undefined = e.target.value;
-
-                if (newBaseUrl && newBaseUrl.trim().length === 0) {
-                  newBaseUrl = undefined;
-                }
-
-                updateProviderSettings(provider.name, { ...provider.settings, baseUrl: newBaseUrl });
-                logStore.logProvider(`Base URL updated for ${provider.name}`, {
-                  provider: provider.name,
-                  baseUrl: newBaseUrl,
-                });
-              }}
-              placeholder={`Enter ${provider.name} base URL`}
-              className="w-full bg-white dark:bg-bolt-elements-background-depth-4 relative px-2 py-1.5 rounded-md focus:outline-none placeholder-bolt-elements-textTertiary text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary border border-bolt-elements-borderColor"
-            />
-          </div>
-        )}
-      </div>
-    );
   };
 
-  const regularProviders = filteredProviders.filter((p) => !URL_CONFIGURABLE_PROVIDERS.includes(p.name));
-  const urlConfigurableProviders = filteredProviders.filter((p) => URL_CONFIGURABLE_PROVIDERS.includes(p.name));
-
   return (
-    <div className="p-4">
-      <div className="flex mb-4">
-        <input
-          type="text"
-          placeholder="Search providers..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full bg-white dark:bg-bolt-elements-background-depth-4 relative px-2 py-1.5 rounded-md focus:outline-none placeholder-bolt-elements-textTertiary text-bolt-elements-textPrimary dark:text-bolt-elements-textPrimary border border-bolt-elements-borderColor"
-        />
+    <div className="h-full flex flex-col">
+      {/* Header */}
+      <div className="px-6 py-4 border-b border-bolt-elements-borderColor bg-bolt-elements-bg-depth-1">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold text-bolt-elements-textPrimary mb-2">Provider Settings</h2>
+          <p className="text-bolt-elements-textSecondary">
+            Configure your AI providers and API keys. Each provider offers different models and capabilities.
+          </p>
+        </div>
       </div>
 
-      {/* Regular Providers Grid */}
-      <div className="grid grid-cols-2 gap-4 mb-8">{regularProviders.map(renderProviderCard)}</div>
+      {/* Tab Navigation */}
+      <div className="px-6 bg-bolt-elements-bg-depth-1 border-b border-bolt-elements-borderColor">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`group relative min-w-0 flex-1 sm:flex-none sm:min-w-[200px] px-4 py-4 text-left transition-all duration-200 ${
+                  activeTab === tab.id
+                    ? 'text-bolt-elements-textPrimary'
+                    : 'text-bolt-elements-textSecondary hover:text-bolt-elements-textPrimary'
+                }`}
+              >
+                {/* Tab Content */}
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200 ${
+                      activeTab === tab.id
+                        ? 'bg-bolt-elements-focus/20'
+                        : 'bg-bolt-elements-bg-depth-3 group-hover:bg-bolt-elements-bg-depth-4'
+                    }`}
+                  >
+                    <img
+                      src={tab.icon}
+                      alt={`${tab.label} icon`}
+                      className="w-5 h-5 dark:invert"
+                      onError={(e) => {
+                        e.currentTarget.src = '/icons/Default.svg';
+                      }}
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-medium truncate">{tab.label}</span>
+                      {tab.badge && (
+                        <span
+                          className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                            tab.badge === 'Popular'
+                              ? 'bg-blue-500/20 text-blue-400'
+                              : tab.badge === 'Free'
+                                ? 'bg-green-500/20 text-green-400'
+                                : 'bg-purple-500/20 text-purple-400'
+                          }`}
+                        >
+                          {tab.badge}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-bolt-elements-textTertiary truncate">{tab.description}</p>
+                  </div>
+                </div>
 
-      {/* URL Configurable Providers Section */}
-      {urlConfigurableProviders.length > 0 && (
-        <div className="mt-8">
-          <h3 className="text-lg font-semibold mb-2 text-bolt-elements-textPrimary">Experimental Providers</h3>
-          <p className="text-sm text-bolt-elements-textSecondary mb-4">
-            These providers are experimental and allow you to run AI models locally or connect to your own
-            infrastructure. They require additional setup but offer more flexibility.
-          </p>
-          <div className="space-y-4">{urlConfigurableProviders.map(renderProviderCard)}</div>
+                {/* Active Tab Indicator */}
+                <div
+                  className={`absolute bottom-0 left-0 right-0 h-0.5 transition-all duration-200 ${
+                    activeTab === tab.id
+                      ? 'bg-bolt-elements-focus scale-x-100'
+                      : 'bg-transparent scale-x-0 group-hover:bg-bolt-elements-borderColor group-hover:scale-x-100'
+                  }`}
+                />
+              </button>
+            ))}
+          </div>
         </div>
-      )}
+      </div>
+
+      {/* Tab Content */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-4xl mx-auto p-6">
+          <div className="min-h-[500px]">{renderTabContent()}</div>
+        </div>
+      </div>
     </div>
   );
 }
