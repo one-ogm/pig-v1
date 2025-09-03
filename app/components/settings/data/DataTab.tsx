@@ -8,23 +8,7 @@ import { classNames } from '~/utils/classNames';
 import type { Message } from 'ai';
 
 // List of supported providers that can have API keys
-const API_KEY_PROVIDERS = [
-  'Anthropic',
-  'OpenAI',
-  'Google',
-  'Groq',
-  'HuggingFace',
-  'OpenRouter',
-  'Deepseek',
-  'Mistral',
-  'OpenAILike',
-  'Together',
-  'xAI',
-  'Perplexity',
-  'Cohere',
-  'AzureOpenAI',
-  'AmazonBedrock',
-] as const;
+const API_KEY_PROVIDERS = ['HuggingFace', 'OpenRouter', 'LMStudio'] as const;
 
 interface ApiKeys {
   [key: string]: string;
@@ -164,10 +148,7 @@ export default function DataTab() {
       template[`${provider}_API_KEY`] = '';
     });
 
-    template.OPENAI_LIKE_API_BASE_URL = '';
     template.LMSTUDIO_API_BASE_URL = '';
-    template.OLLAMA_API_BASE_URL = '';
-    template.TOGETHER_API_BASE_URL = '';
 
     downloadAsJson(template, 'api-keys-template.json');
     toast.success('API keys template exported successfully');
@@ -217,13 +198,11 @@ export default function DataTab() {
         }
 
         // Set base URLs if they exist
-        ['OPENAI_LIKE_API_BASE_URL', 'LMSTUDIO_API_BASE_URL', 'OLLAMA_API_BASE_URL', 'TOGETHER_API_BASE_URL'].forEach(
-          (baseUrl) => {
-            if (apiKeys[baseUrl]) {
-              Cookies.set(baseUrl, apiKeys[baseUrl]);
-            }
-          },
-        );
+        ['LMSTUDIO_API_BASE_URL'].forEach((baseUrl) => {
+          if (apiKeys[baseUrl]) {
+            Cookies.set(baseUrl, apiKeys[baseUrl]);
+          }
+        });
       } catch (error) {
         toast.error('Failed to import API keys. Make sure the file is a valid JSON file.');
         console.error('Failed to import API keys:', error);
