@@ -3,4 +3,5 @@ interface Env {
   HuggingFace_API_KEY: string;
   OPEN_ROUTER_API_KEY: string;
   LMSTUDIO_API_BASE_URL: string;
+  MONGODB_URI: string;
 }
