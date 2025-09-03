@@ -1,0 +1,79 @@
+import { type ActionFunctionArgs, type LoaderFunctionArgs, json } from '@remix-run/cloudflare';
+import { ApiTokenService } from '~/lib/db/services/apiTokenService';
+
+export async function loader({ request, params }: LoaderFunctionArgs) {
+  const url = new URL(request.url);
+  const provider = url.searchParams.get('provider');
+
+  try {
+    if (provider) {
+      // Get specific provider token
+      const apiKey = await ApiTokenService.getApiKey(provider as any);
+      return json({ 
+        provider, 
+        hasToken: !!apiKey,
+        apiKey: apiKey || null 
+      });
+    } else {
+      // Get all tokens
+      const allApiKeys = await ApiTokenService.getAllApiKeys();
+      return json({ apiKeys: allApiKeys });
+    }
+  } catch (error) {
+    console.error('Error in tokens loader:', error);
+    return json({ error: 'Failed to fetch tokens' }, { status: 500 });
+  }
+}
+
+export async function action({ request }: ActionFunctionArgs) {
+  const method = request.method;
+
+  try {
+    switch (method) {
+      case 'POST': {
+        // Save/Update token
+        const { provider, apiKey } = await request.json();
+        
+        if (!provider || !apiKey) {
+          return json({ error: 'Provider and apiKey are required' }, { status: 400 });
+        }
+
+        if (!['OpenRouter', 'HuggingFace', 'LMStudio'].includes(provider)) {
+          return json({ error: 'Invalid provider' }, { status: 400 });
+        }
+
+        const savedToken = await ApiTokenService.saveApiKey(provider, apiKey);
+        return json({ 
+          success: true, 
+          message: `${provider} API key saved successfully`,
+          token: savedToken 
+        });
+      }
+
+      case 'DELETE': {
+        // Delete token
+        const { provider } = await request.json();
+        
+        if (!provider) {
+          return json({ error: 'Provider is required' }, { status: 400 });
+        }
+
+        const deleted = await ApiTokenService.deleteApiKey(provider);
+        if (deleted) {
+          return json({ 
+            success: true, 
+            message: `${provider} API key deleted successfully` 
+          });
+        } else {
+          return json({ error: 'Failed to delete API key' }, { status: 500 });
+        }
+      }
+
+      default:
+        return json({ error: 'Method not allowed' }, { status: 405 });
+    }
+  } catch (error) {
+    console.error('Error in tokens action:', error);
+    return json({ error: 'Server error' }, { status: 500 });
+  }
+}
